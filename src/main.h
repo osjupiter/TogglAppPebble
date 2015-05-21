@@ -8,14 +8,6 @@ void setStartActionBar();
 
 void setStopActionBar();
 
-char* calculateDuration(struct tm *current_time, int duration);
-
-void start();
-
-void stop(int id);
-
-void get();
-
 void start_handler(ClickRecognizerRef recognizer, void *context);
 
 void stop_handler(ClickRecognizerRef recognizer, void *context);

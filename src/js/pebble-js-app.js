@@ -25,14 +25,26 @@ function send(token,method,call,json) {
 	}
 }
 
-function startTimer() {
+function startTimer(desc) {
 	var data = {};
 	data.time_entry = {};
-    data.time_entry.description = localStorage.getItem("desc");
+  data.time_entry.description = desc?desc:localStorage.getItem("desc");
     data.time_entry.created_with = "TogglAppPebble";
     var json = JSON.stringify(data);
     var result = send(token,"POST","time_entries/start",json);
     return result.data;
+}
+function getHistory() {
+    var dateString=encodeURI(new Date().toISOString());
+    var result = send(token,"GET","time_entries?end_date="+dateString,null);
+    var res={};
+  console.log(result);
+    for(var i=0; i<result.length;i++){
+      console.log(" in for :::::"+result[i].description);
+      res[i+10]=result[i].description;
+      i++;
+    }
+    return res;
 }
 
 function stopTimer(id) {
@@ -83,23 +95,28 @@ Pebble.addEventListener("ready",
                         );
 
 Pebble.addEventListener("appmessage",
-                        function(e) {
-                            console.log("Received message: " + e.payload);
-                            if (e.payload.start) {
-                                data = startTimer();
-								Pebble.sendAppMessage({
-									"id": data.id,
-									"duration": data.duration,
-									 "description": data.description?data.description:"an unnamed task",
-									"start":"1"
-								});
-							} else if (e.payload.stop ) {
-                                stopTimer(e.payload.id);
-							} else if (e.payload.get ) {
-								getCurrentTimer();
-							}
-                        }
-                        );
+  function(e) {
+    console.log("Received message: " + e.payload.description);
+    if (e.payload.start) {
+      data = startTimer(e.payload.description);
+  		Pebble.sendAppMessage({
+	  	  "id": data.id,
+				"duration": data.duration,
+				"description": data.description?data.description:"an unnamed task",
+				"start":"1"
+			});
+    } else if (e.payload.stop ) {
+      stopTimer(e.payload.id);
+		} else if (e.payload.get ) {
+		  getCurrentTimer();
+		} else if(e.payload.history){
+      console.log("in if block history");
+      var res=getHistory();
+      res.history=1;
+      Pebble.sendAppMessage(res);
+    }
+  }
+);
 
 Pebble.addEventListener("showConfiguration", function (e) {
 	var token = localStorage.getItem('token');
