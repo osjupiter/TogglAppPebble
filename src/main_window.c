@@ -20,6 +20,7 @@ void start_handler(ClickRecognizerRef recognizer, void *context) {
 	setStopActionBar();
 }
 void history_handler(ClickRecognizerRef recognizer, void *context) {
+  set_content_string( "Fetch History...");
   history();
 }
 
@@ -52,6 +53,7 @@ void setStopActionBar() {
 	action_bar_layer_clear_icon(action_bar, BUTTON_ID_UP);
   action_bar_layer_clear_icon(action_bar, BUTTON_ID_SELECT);
  }
+
 
 
 

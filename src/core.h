@@ -16,6 +16,7 @@ int GcurrentTid;
 uint32_t Gduration;
 struct tm *last_time;
 char *Gdescription;
+  bool nowFetch;
 
 char* calculateDuration(struct tm *current_time, int duration) ;
 void updateSysCurrentTimer(Tuple *id, Tuple *duration, Tuple *description) ;

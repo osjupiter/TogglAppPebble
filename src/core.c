@@ -8,6 +8,7 @@ uint32_t Gduration;
 struct tm *last_time;
 char *Gdescription;
 int TIME_ZONE_OFFSET=0;
+  bool nowFetch=false;
 
 char* calculateDuration(struct tm *current_time, int duration) {
 	unsigned int unix_time;
@@ -89,6 +90,8 @@ void get() {
 	app_message_outbox_send();
 }
 void history() {
+  if(nowFetch)return;
+  nowFetch=true;
 	DictionaryIterator *it;
 	app_message_outbox_begin(&it);
 	Tuplet p1 = TupletInteger(APPMESS_history, 1);

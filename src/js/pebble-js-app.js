@@ -40,9 +40,8 @@ function getHistory() {
     var res={};
   console.log(result);
     for(var i=0; i<result.length;i++){
-      console.log(" in for :::::"+result[i].description);
+      console.log(i+" in for :::::"+result[i].description);
       res[i+10]=result[i].description;
-      i++;
     }
     return res;
 }
@@ -112,7 +111,8 @@ Pebble.addEventListener("appmessage",
 		} else if(e.payload.history){
       console.log("in if block history");
       var res=getHistory();
-      res.history=1;
+      res["history"]=1;
+      console.log("asnd as history ="+JSON.stringify(res));
       Pebble.sendAppMessage(res);
     }
   }

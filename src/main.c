@@ -5,6 +5,7 @@
 #include<history_window.h>
 
 
+
 void updateCurrentTimer(struct tm *tick_time, TimeUnits units_changed) {
 	static char buf[64] = "";
 	last_time = tick_time;
@@ -41,7 +42,9 @@ void in_received_handler(DictionaryIterator *it, void *context) {
 		APP_LOG(APP_LOG_LEVEL_INFO,"Timezone offset set! %d",TIME_ZONE_OFFSET);
 	} else if (historyList){
     APP_LOG(APP_LOG_LEVEL_INFO,"Get History!!");
+    if(!it) APP_LOG(APP_LOG_LEVEL_INFO,"Dict is NULL!!!!!!");
     window_stack_push(create_history_window(it), true);
+    nowFetch=false;
     
   }
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "Finished inhandler");

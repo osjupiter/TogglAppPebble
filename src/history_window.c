@@ -6,7 +6,7 @@
 Window *history_window;
 MenuLayer *menu_layer;
 
-char names[10][200];
+char names[20][200];
 int size=0;
 void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_index, void *callback_context)
 {
@@ -25,7 +25,7 @@ void select_click_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *c
   start(names[cell_index->row]);
 window_stack_pop(true);
   set_content_string( "Timer is being started");
-	//setStopActionBar();
+	setStopActionBar();
   
 }
 void history_window_load(Window *window) {
@@ -51,16 +51,25 @@ void history_window_load(Window *window) {
 void history_window_unload(Window *window) {
   menu_layer_destroy(menu_layer);
   window_destroy(window);
+  get();
 }
 
 Window *create_history_window(DictionaryIterator *Items){
-  int i;
+  int i=0;
+  APP_LOG(APP_LOG_LEVEL_INFO,"create_history_window!!!!!!");
   size=0;
-  if(history_window)return history_window;
-  for(i=0;true;i++){
-    Tuple *item =dict_read_next(Items);
+  //if(history_window){ APP_LOG(APP_LOG_LEVEL_INFO,"already history_window exist!!!!!!!!");return history_window;}
+  Tuple *item = dict_read_first(Items);
+  while(true){
     if(!item)break;
-    strcpy(names[i],item->value->cstring);
+    if(item->key==APPMESS_history){
+      item =dict_read_next(Items);
+      continue;
+    }
+    strncpy(names[i],item->value->cstring,200);
+    APP_LOG(APP_LOG_LEVEL_INFO,"Loaded Item!! %lu=>%s",item->key,item->value->cstring); 
+    item =dict_read_next(Items);
+    i++;
   }
   size=i;
   
