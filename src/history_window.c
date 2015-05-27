@@ -1,12 +1,14 @@
 #include <pebble.h>
 #include "history_window.h"
 #include "core.h"
-  #include"main_window.h"
+#include"main_window.h"
+#define MAX_ENTRY 50
   
 Window *history_window;
 MenuLayer *menu_layer;
 
-char names[20][200];
+
+char names[MAX_ENTRY][200];
 int size=0;
 void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_index, void *callback_context)
 {

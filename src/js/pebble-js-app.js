@@ -1,15 +1,19 @@
 
-var token;
+var token,wid;
 function tokenIsSet(){
 	return token != "undefined" && token != null && token != ""
 }
 function send(token,method,call,json) {
 	if(tokenIsSet()){
+    if(call.indexOf("https://")===-1){
+      call= "https://www.toggl.com/api/v8/" +call;
+    }
 		var xhr = new XMLHttpRequest();
-		console.log("Send token"+token);
+		console.log("Send token "+token);
+    console.log("url:  "+call);
 		var auth = "Basic "+base64.encode(token+':api_token');
 		console.log(auth);
-		xhr.open(method, "https://toggl.com/api/v8/"+call, false);
+		xhr.open(method,call, false);
 		xhr.setRequestHeader('Authorization',auth);
 		xhr.setRequestHeader('Content-type','application/json');
 		if ( json !== null ) {
@@ -36,12 +40,13 @@ function startTimer(desc) {
 }
 function getHistory() {
     var dateString=encodeURI(new Date().toISOString());
-    var result = send(token,"GET","time_entries?end_date="+dateString,null);
+    var result = send(token,"GET","https://toggl.com/reports/api/v2/details?until="+dateString+"&user_agent=TogglAppPebble&workspace_id="+wid,null);
     var res={};
-  console.log(result);
-    for(var i=0; i<result.length;i++){
-      console.log(i+" in for :::::"+result[i].description);
-      res[i+10]=result[i].description;
+    var arr=result.data;
+    console.log(result);
+    for(var i=0; i<arr.length;i++){
+      console.log(i+" in for :::::"+arr[i].description);
+      res[i+10]=arr[i].description;
     }
     return res;
 }
@@ -54,6 +59,14 @@ function stopTimer(id) {
 function getTimer() {
     var result = send(token,"GET","time_entries/current",null);
     return result.data;
+}
+
+function getWorkspace(){
+   var result = send(token,"GET","workspaces",null);
+  console.log("wid= "+result[0].id);
+  localStorage.setItem("wid", result[0].id);
+  wid=localStorage.getItem("wid");
+   return result.data;
 }
 
 function getCurrentTimer() {
@@ -77,21 +90,25 @@ function getCurrentTimer() {
 							}
 }
 
-Pebble.addEventListener("ready",
-                        function(e) {
+Pebble.addEventListener("ready", function(e) {
                             console.log("JavaScript app ready and running!");
 							token = localStorage.getItem("token");
 							Pebble.sendAppMessage({
 									"offset": parseInt(localStorage.getItem("offset"))
 								});
-							if(tokenIsSet()){
-								getCurrentTimer();
-							}else{
-								console.log('No token')
+							if(!tokenIsSet()){
+								 console.log('No token');
+                return;
 							}
+							getCurrentTimer();
+              if(!localStorage.getItem("wid")){
+                getWorkspace();	
+              }else{
+                wid=localStorage.getItem("wid");
+              }
+              						
                             	
-                        }
-                        );
+});
 
 Pebble.addEventListener("appmessage",
   function(e) {
